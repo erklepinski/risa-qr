@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Risa Professional</title>
+<style>
+  :root{ --bg:#5E2F68; --deep:#2B1433; --rosa:#F9C1D0; --acao:#D9468A; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; }
+  body{ font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:#fff; text-align:center;
+    background:radial-gradient(600px 500px at 100% 0%, rgba(247,174,176,.35), transparent 60%), linear-gradient(180deg, var(--bg), var(--deep));
+    display:flex; align-items:center; justify-content:center; padding:24px; }
+  .c{ max-width:420px; }
+  img{ width:220px; max-width:70%; }
+  h1{ font-size:26px; margin:28px 0 8px; line-height:1.2; }
+  p{ font-size:17px; line-height:1.45; margin:0 0 28px; opacity:.92; }
+  .spin{ width:44px; height:44px; margin:0 auto 22px; border-radius:50%; border:5px solid rgba(255,255,255,.2); border-top-color:var(--rosa); animation:s 0.9s linear infinite; }
+  @keyframes s{ to{ transform:rotate(360deg);} }
+  a.btn{ display:inline-block; background:linear-gradient(135deg, var(--acao), #8E4F9E); color:#fff; text-decoration:none; font-weight:700; font-size:18px; padding:16px 30px; border-radius:999px; }
+  @media (prefers-reduced-motion: reduce){ .spin{ animation:none; } }
+</style>
+</head>
+<body>
+<div class="c">
+  <img src="logo.png" alt="Risa Professional">
+  <h1 id="t">Liberando seu jogo no totem…</h1>
+  <div class="spin" id="spin"></div>
+  <p id="m">Em instantes você vai para o Instagram da <b>Risa Professional</b>.</p>
+  <a class="btn" id="go" href="https://www.instagram.com/use.risa/">Abrir @use.risa</a>
+</div>
+<script>
+/* Página intermediária do QR do jogo (hospedada fora do Google):
+   1) avisa a planilha (Apps Script) que o QR deste cadastro foi lido,
+      em segundo plano e SEM login/cookies do Google;
+   2) manda a pessoa direto pro Instagram da Risa.
+   URL: .../?t=<ID do lead>  */
+(function () {
+  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxM4nxhLeVnSVdPyH4uVUsY3M8OhFd3xUo3yXXbaLnf1j7038qX9vI9NEdJ7xzB2Cvm/exec";
+  var INSTAGRAM = "https://www.instagram.com/use.risa/";
+  var t = (new URLSearchParams(location.search).get("t") || "").replace(/[^a-zA-Z0-9\-]/g, "").slice(0, 64);
+  var done = false;
+  function go() {
+    if (done) return; done = true;
+    document.getElementById("t").textContent = "Pronto! Seu jogo foi liberado 💜";
+    document.getElementById("spin").style.display = "none";
+    location.replace(INSTAGRAM);
+  }
+  if (!t) { go(); return; }
+  var url = SCRIPT_URL + "?a=scan&t=" + encodeURIComponent(t) + "&via=web&_=" + Date.now();
+  try {
+    fetch(url, { mode: "no-cors", credentials: "omit", keepalive: true, cache: "no-store" }).then(go, go);
+  } catch (e) {
+    new Image().src = url; // navegador antigo
+  }
+  setTimeout(go, 3500); // se o Google demorar, segue pro Instagram mesmo assim (o aviso já saiu)
+})();
+</script>
+</body>
+</html>
